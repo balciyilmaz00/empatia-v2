@@ -191,8 +191,7 @@ cursor = conn.cursor()
 # EKLENEN KORUMA SATIRI:
 cursor.execute("CREATE TABLE IF NOT EXISTS sohbetler (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, rol TEXT, mesaj TEXT, tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
 
-# Hata veren orijinal satırın:
-cursor.execute("SELECT mesaj, tarih FROM sohbetler WHERE user_id = ? ...") 
+
 # ... alttaki kodlar ...
 cursor.execute("SELECT mesaj, tarih FROM sohbetler WHERE user_id = ? AND rol = 'user' ORDER BY tarih DESC LIMIT 5", (st.session_state.user_id,))
 gecmis_mesajlar = cursor.fetchall()
