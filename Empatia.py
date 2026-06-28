@@ -185,19 +185,28 @@ with st.sidebar:
     
     conn = sqlite3.connect("empatia.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT mesaj, tarih FROM sohbetler WHERE user_id = ? AND rol = 'user' ORDER BY tarih DESC LIMIT 5", (st.session_state.user_id,))
-    gecmis_mesajlar = cursor.fetchall()
-    conn.close()
+    # ... üstteki bağlantı kodları ...
+cursor = conn.cursor()
+
+# EKLENEN KORUMA SATIRI:
+cursor.execute("CREATE TABLE IF NOT EXISTS sohbetler (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, rol TEXT, mesaj TEXT, tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+
+# Hata veren orijinal satırın:
+cursor.execute("SELECT mesaj, tarih FROM sohbetler WHERE user_id = ? ...") 
+# ... alttaki kodlar ...
+cursor.execute("SELECT mesaj, tarih FROM sohbetler WHERE user_id = ? AND rol = 'user' ORDER BY tarih DESC LIMIT 5", (st.session_state.user_id,))
+gecmis_mesajlar = cursor.fetchall()
+conn.close()
     
-    if gecmis_mesajlar:
+if gecmis_mesajlar:
         for msj, tarih in gecmis_mesajlar:
             kisa_msj = msj if len(msj) <= 25 else msj[:25] + "..."
             st.info(f"⏱️ {tarih[11:16]}\n\n{kisa_msj}")
-    else:
+else:
         st.caption("Henüz geçmiş mesajınız bulunmuyor.")
         
-    st.markdown("---")
-    if st.button("🚪 Oturumu Kapat", use_container_width=True, type="secondary"):
+        st.markdown("---")
+if st.button("🚪 Oturumu Kapat", use_container_width=True, type="secondary"):
         st.session_state.giris_yapti = False
         st.session_state.user_id = None
         st.session_state.username = None
